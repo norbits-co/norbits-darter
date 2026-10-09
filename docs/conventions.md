@@ -58,20 +58,20 @@ Type labels match the branch types and are added automatically from the branch p
 
 | Label | Description | Color |
 | --- | --- | --- |
-| `feat` | New feature or page | `0e8a16` |
-| `bug` | Something is broken | `d73a4a` |
+| `feat` | New feature | `a2eeef` |
+| `bug` | Something isn't working | `d73a4a` |
 | `docs` | Documentation only | `0075ca` |
 | `chore` | Maintenance, tooling, dependencies | `cfd3d7` |
-| `test` | Adding or changing tests | `fbca04` |
-| `ci` | CI and workflow changes | `5319e7` |
-| `refactor` | Code change with no behaviour change | `c5def5` |
-| `release` | Release preparation and release notes | `ff9f1c` |
-| `task` | A unit of work an agent or human can pick up | `bfdadc` |
-| `size/XS` | 10 lines changed or fewer | `e6f4ea` |
-| `size/S` | 11 to 50 lines changed | `cdeed6` |
-| `size/M` | 51 to 200 lines changed | `fef2c0` |
-| `size/L` | 201 to 500 lines changed | `f9d0c4` |
-| `size/XL` | More than 500 lines changed; consider splitting the PR | `d93f0b` |
+| `test` | Adding or changing tests | `3e7c28` |
+| `ci` | CI and workflow changes | `008672` |
+| `refactor` | Code change with no behaviour change | `e4e669` |
+| `release` | Release preparation and release notes | `d876e3` |
+| `task` | A unit of work an agent or human can pick up | `ffffff` |
+| `size/XS` | 10 lines changed or fewer | `407550` |
+| `size/S` | 11 to 50 lines changed | `859af5` |
+| `size/M` | 51 to 200 lines changed | `47088a` |
+| `size/L` | 201 to 500 lines changed | `8f442b` |
+| `size/XL` | More than 500 lines changed; consider splitting the PR | `fa3055` |
 
 ## Dependencies
 - Prefer what is already installed.
