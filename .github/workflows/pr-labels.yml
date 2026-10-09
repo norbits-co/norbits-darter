@@ -1,0 +1,44 @@
+name: PR labels
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  type:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      # Adds the type label from the branch prefix (see .github/labeler.yml).
+      - uses: actions/labeler@v7
+
+  size:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Label PR by size
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          # Lines changed, ignoring the lockfile.
+          changed=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate \
+            --jq '.[] | select(.filename != "pnpm-lock.yaml") | .changes' | awk '{s+=$1} END {print s+0}')
+          if [ "$changed" -le 10 ]; then size=XS
+          elif [ "$changed" -le 50 ]; then size=S
+          elif [ "$changed" -le 200 ]; then size=M
+          elif [ "$changed" -le 500 ]; then size=L
+          else size=XL; fi
+          echo "$changed lines changed -> size/$size"
+          for other in XS S M L XL; do
+            if [ "$other" != "$size" ]; then
+              gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --remove-label "size/$other" 2>/dev/null || true
+            fi
+          done
+          gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-label "size/$size"

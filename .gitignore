@@ -1,0 +1,30 @@
+# ignored files
+# tracked in the template so its ignored/*.example.md skeletons ship; uncomment after cloning
+# ignored/
+
+# template maintainer's private files, never published
+/ignored/TODO.md
+/ignored/docs/automation-policy.md
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
+*.tsbuildinfo
+
+# env and secrets
+.env*
+!.env.example
+*.pem
+
+# local backups
+.backup
+
+# logs and OS files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

@@ -1,0 +1,29 @@
+# Replace @dwainXDL with your handle (or a team).
+# Pair this with a ruleset that requires code-owner approval.
+# Reserve required review for sensitive areas only. Assign ordinary areas to
+# capable teammates (or leave unowned). Owning everything keeps you the bottleneck.
+
+# Workflow, agent instructions and ownership itself
+/.github/workflows/   @dwainXDL
+/.github/CODEOWNERS   @dwainXDL
+/AGENTS.md            @dwainXDL
+/CLAUDE.md            @dwainXDL
+/.claude/             @dwainXDL
+/LICENSE              @dwainXDL
+
+# Quality rules and verification config (changing these can weaken the gate)
+/docs/architecture.md @dwainXDL
+/docs/testing.md      @dwainXDL
+/docs/review.md       @dwainXDL
+/scripts/verify*      @dwainXDL
+/eslint.config.*      @dwainXDL
+/playwright.config.*  @dwainXDL
+# package.json holds the verify script but also every dependency, so it is not
+# owned wholesale. Review changes to its "scripts" block.
+
+# Never-automate areas: adjust paths to the project's real layout
+/src/auth/            @dwainXDL
+/src/payments/        @dwainXDL
+/migrations/          @dwainXDL
+/infra/               @dwainXDL
+/config/production*   @dwainXDL

@@ -1,0 +1,72 @@
+name: Claude Code
+
+# The run title carries the thread number so the guard step can spot a run already working on the same thread.
+run-name: "Claude #${{ github.event.issue.number || github.event.pull_request.number }}"
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write # only used by the guard step to post the "already running" comment
+      id-token: write
+      actions: read
+    steps:
+      # One Claude run per issue/PR at a time. A new request does NOT cancel the running one;
+      # it is declined with a comment.
+      - name: Skip if Claude is running on this thread
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          THREAD: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          busy=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/claude.yml/runs?per_page=50" \
+            --jq "[.workflow_runs[] | select((.status == \"in_progress\" or .status == \"queued\") and .id != $GITHUB_RUN_ID and .display_title == \"Claude #$THREAD\")] | length")
+          if [ "$busy" -gt 0 ]; then
+            echo "busy=true" >> "$GITHUB_OUTPUT"
+            gh issue comment "$THREAD" --repo "$GITHUB_REPOSITORY" \
+              --body "Claude is already working on this thread, so this request was not started. Wait for the current run to finish, then ask again."
+          fi
+
+      - name: Checkout repository
+        if: steps.guard.outputs.busy != 'true'
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        if: steps.guard.outputs.busy != 'true'
+        id: claude
+        uses: anthropics/claude-code-action@86d88e619d8e6caf07b5c3944dd14f441c533718 # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
+          # prompt: 'Update the pull request description to include a summary of changes.'
+
+          # Cost and behaviour limits. Reviews follow AGENTS.md, which points to docs/review.md.
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
+          claude_args: |
+            --max-turns 10
+            --model claude-sonnet-5-5

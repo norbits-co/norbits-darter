@@ -1,0 +1,56 @@
+name: Bug
+description: Something is broken or behaves wrongly
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, starting from a URL, page or command.
+      placeholder: "1. Open ...\n2. Click ...\n3. See ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happens instead. Include exact error text if there is any.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Where you saw it (local, preview, production), browser and version, device, screen size, OS, Node version. Write N/A if none.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria for the fix
+      description: Observable, testable examples of the fixed behaviour, numbered with stable IDs (AC1, AC2, ...).
+      placeholder: "- AC1: Given ..., when ..., then ..."
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Screenshots, recordings, console output, or links. Write N/A if none.
+    validations:
+      required: true

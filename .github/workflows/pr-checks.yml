@@ -1,0 +1,71 @@
+name: PR checks
+
+on:
+  pull_request:
+    types:
+      [
+        opened,
+        edited,
+        synchronize,
+        reopened,
+        assigned,
+        unassigned,
+        milestoned,
+        demilestoned,
+      ]
+
+# Read-only: this workflow only inspects the branch name, PR title, assignee and milestone.
+permissions: {}
+
+# latest event wins, so a late assignee or milestone clears an earlier failure
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check assignee and milestone
+        env:
+          ASSIGNEES: ${{ join(github.event.pull_request.assignees.*.login, ',') }}
+          MILESTONE: ${{ github.event.pull_request.milestone.title }}
+        run: |
+          status=0
+          if [ -z "$ASSIGNEES" ]; then
+            echo "::error::PR needs an assignee (the owner unless told otherwise)."
+            status=1
+          fi
+          if [ -z "$MILESTONE" ]; then
+            echo "::error::PR needs a milestone (use the open one)."
+            status=1
+          fi
+          exit $status
+
+  naming:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name and PR title
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          status=0
+          branch_re='^(feat|bug|docs|chore|test|ci|refactor|release)/[a-z0-9]+(-[a-z0-9]+)+$'
+          if [ "$HEAD_REF" != "dev" ] && ! [[ "$HEAD_REF" =~ $branch_re ]]; then
+            echo "::error::Branch '$HEAD_REF' must match <type>/<person>-<rest> (types: feat, bug, docs, chore, test, ci, refactor, release), lowercase with hyphens, e.g. feat/<person>-add-login-page."
+            status=1
+          fi
+          title_re='^(feat|bug|docs|chore|test|ci|refactor|release): [a-z]'
+          if ! [[ "$PR_TITLE" =~ $title_re ]]; then
+            echo "::error::PR title must be '<type>: <summary>' with a lowercase summary (types: feat, bug, docs, chore, test, ci, refactor, release), e.g. 'feat: add login page'."
+            status=1
+          elif [[ "$HEAD_REF" =~ $branch_re ]] && [ "${PR_TITLE%%:*}" != "${HEAD_REF%%/*}" ]; then
+            echo "::error::PR title type '${PR_TITLE%%:*}' must match the branch type '${HEAD_REF%%/*}'."
+            status=1
+          fi
+          if [[ "$PR_TITLE" =~ \.$ ]]; then
+            echo "::error::PR title must not end with a period."
+            status=1
+          fi
+          exit $status

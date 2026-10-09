@@ -1,0 +1,11 @@
+
+# next.js build output
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# package manager
+/.pnp
+.pnp.*
+.yarn/*

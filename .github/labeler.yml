@@ -1,0 +1,16 @@
+feat:
+  - head-branch: ["^feat/"]
+bug:
+  - head-branch: ["^bug/"]
+docs:
+  - head-branch: ["^docs/"]
+chore:
+  - head-branch: ["^chore/"]
+test:
+  - head-branch: ["^test/"]
+ci:
+  - head-branch: ["^ci/"]
+refactor:
+  - head-branch: ["^refactor/"]
+release:
+  - head-branch: ["^release/"]

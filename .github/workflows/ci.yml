@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Pin actions to commit SHAs for stricter supply-chain safety.
+      # Mark "checks" as a required status check in the repo ruleset (GitHub settings).
+      - uses: actions/checkout@v7
+
+      # The template repo itself has no package.json, so the steps below are skipped there
+      # and the job still passes. Projects created from it have one.
+      # pnpm version is read from "packageManager" in package.json
+      - uses: pnpm/action-setup@v6
+        if: hashFiles('package.json') != ''
+
+      - uses: actions/setup-node@v7
+        if: hashFiles('package.json') != ''
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+        if: hashFiles('package.json') != ''
+
+      # Same single entry point developers and agents run locally.
+      # Every project defines "verify" in package.json (see docs/conventions.md).
+      # Tests must run once and exit, never in watch mode.
+      - run: pnpm verify
+        if: hashFiles('package.json') != ''
+
+      # Enable once Playwright is configured (needs a "test:e2e" script):
+      # - run: pnpm exec playwright install --with-deps chromium
+      # - run: pnpm test:e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: failure-artifacts
+          path: |
+            playwright-report/
+            test-results/
+            coverage/
+          if-no-files-found: ignore

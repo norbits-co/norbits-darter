@@ -1,0 +1,10 @@
+{
+  "outputStyle": "Reviewable",
+  "permissions": {
+    "defaultMode": "default"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}

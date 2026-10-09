@@ -1,0 +1,62 @@
+name: Task
+description: A unit of work an agent or human can pick up
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What users should be able to do.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable, testable examples of required behaviour, numbered with stable IDs (AC1, AC2, ...). Required behaviour only; put optional ideas under "Implementation suggestions".
+      placeholder: "- AC1: Given ..., when ..., then ..."
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What this task must not change or attempt. Write N/A if none.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Required architecture, API contracts, design references (links). Write N/A if none.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other issues, services, or decisions this depends on. Write N/A if none.
+    validations:
+      required: true
+  - type: textarea
+    id: edge-cases
+    attributes:
+      label: Edge cases
+      description: Permissions, invalid input, loading and failure states, mobile and keyboard use. Write N/A if none.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: For each criterion ID, the expected evidence (automated test, preview URL, screenshot, manual check), or "N/A" with a reason.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Implementation suggestions
+      description: Non-binding ideas. The agent may choose a different approach if the acceptance criteria and constraints are met. Write N/A if none.
+    validations:
+      required: true
